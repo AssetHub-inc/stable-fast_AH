@@ -164,4 +164,5 @@ cython_debug/
 compiled_cache.db
 
 # Repo specific
-data/outputs
+data/outputs/*
+!data/outputs/.gitkeep
