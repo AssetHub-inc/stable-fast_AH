@@ -23,6 +23,7 @@ import argparse
 import time
 import json
 import torch
+from argparse import Namespace
 from typing import Any
 from PIL import (Image, ImageDraw)
 from diffusers.utils import load_image
@@ -152,8 +153,11 @@ class IterationProfiler:
         return callback_kwargs
 
 
-def prepare_model() -> tuple[Any, dict[str, ], str | None]:
-    args = parse_args()
+def prepare_model(args: Namespace | None = None,
+                  ) -> tuple[Any, dict[str, ], str | None]:
+    if args is None:
+        args = parse_args()
+    
     if args.input_image is None:
         from diffusers import AutoPipelineForText2Image as pipeline_cls
     else:
@@ -293,7 +297,8 @@ def image_gen(
 
 
 if __name__ == '__main__':
-    model, kwarg_inputs, output_image = prepare_model()
+    args = parse_args()
+    model, kwarg_inputs, output_image = prepare_model(args=args)
     
     image_gen(
         model=model,
