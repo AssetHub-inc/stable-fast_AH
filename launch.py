@@ -156,6 +156,8 @@ class IterationProfiler:
 
 def prepare_model(args: Namespace | None = None,
                   ) -> tuple[Any, dict[str, Any]]:
+    begin_prep = time.time()
+    
     if args is None:
         args = parse_args()
     
@@ -252,15 +254,23 @@ def prepare_model(args: Namespace | None = None,
         return kwarg_inputs
     
     kwarg_inputs = get_kwarg_inputs()
+    
+    end_prep = time.time()
+    print(f'Model preparation time: {end_prep - begin_prep:.3f}s')
 
     # NOTE: Warm it up.
     # The initial calls will trigger compilation and might be very slow.
     # After that, it should be very fast.
     if args.warmups > 0:
+        begin_warmup = time.time()
         print('Begin warmup')
+        
         for _ in range(args.warmups):
             model(**kwarg_inputs)
+        
+        end_warmup = time.time()
         print('End warmup')
+        print(f'Warmup time ({args.warmups} times): {end_warmup - begin_warmup:.3f}s')
     
     return model, kwarg_inputs
 
