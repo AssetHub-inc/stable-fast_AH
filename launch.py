@@ -154,7 +154,7 @@ class IterationProfiler:
 
 
 def prepare_model(args: Namespace | None = None,
-                  ) -> tuple[Any, dict[str, ], str | None]:
+                  ) -> tuple[Any, dict[str, Any]]:
     if args is None:
         args = parse_args()
     
@@ -261,7 +261,7 @@ def prepare_model(args: Namespace | None = None,
             model(**kwarg_inputs)
         print('End warmup')
     
-    return model, kwarg_inputs, args.output_image
+    return model, kwarg_inputs
 
 
 def image_gen(
@@ -298,10 +298,10 @@ def image_gen(
 
 if __name__ == '__main__':
     args = parse_args()
-    model, kwarg_inputs, output_image = prepare_model(args=args)
+    model, kwarg_inputs = prepare_model(args=args)
     
     image_gen(
         model=model,
         kwarg_inputs=kwarg_inputs,
-        output_image=output_image
+        output_image=args.output_image,
     )
