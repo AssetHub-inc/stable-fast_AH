@@ -268,6 +268,7 @@ def image_gen(
     model,
     kwarg_inputs: dict[str, ],
     output_image: str | None,
+    print_image_terminal=False,
 ):
     # Let's see it!
     # Note: Progress bar might work incorrectly due to the async nature of CUDA.
@@ -280,10 +281,11 @@ def image_gen(
     end = time.time()
 
     # Let's view it in terminal!
-    from sfast.utils.term_image import print_image
+    if print_image_terminal:
+        from sfast.utils.term_image import print_image
 
-    for image in output_images:
-        print_image(image, max_width=80)
+        for image in output_images:
+            print_image(image, max_width=80)
 
     print(f'Inference time: {end - begin:.3f}s')
     iter_per_sec = iter_profiler.get_iter_per_sec()
