@@ -23,6 +23,7 @@ import argparse
 import time
 import json
 import torch
+from typing import Any
 from PIL import (Image, ImageDraw)
 from diffusers.utils import load_image
 from sfast.compilers.diffusion_pipeline_compiler import (compile,
@@ -151,7 +152,7 @@ class IterationProfiler:
         return callback_kwargs
 
 
-def prepare_model():
+def prepare_model() -> tuple[Any, dict[str, ], str | None]:
     args = parse_args()
     if args.input_image is None:
         from diffusers import AutoPipelineForText2Image as pipeline_cls
