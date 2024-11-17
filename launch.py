@@ -151,7 +151,7 @@ class IterationProfiler:
         return callback_kwargs
 
 
-def main():
+def prepare_model():
     args = parse_args()
     if args.input_image is None:
         from diffusers import AutoPipelineForText2Image as pipeline_cls
@@ -244,6 +244,8 @@ def main():
             else:
                 kwarg_inputs['control_image'] = control_image
         return kwarg_inputs
+    
+    kwarg_inputs = get_kwarg_inputs()
 
     # NOTE: Warm it up.
     # The initial calls will trigger compilation and might be very slow.
@@ -251,12 +253,19 @@ def main():
     if args.warmups > 0:
         print('Begin warmup')
         for _ in range(args.warmups):
-            model(**get_kwarg_inputs())
+            model(**kwarg_inputs)
         print('End warmup')
+    
+    return model, kwarg_inputs, args.output_image
 
+
+def image_gen(
+    model,
+    kwarg_inputs: dict[str, ],
+    output_image: str | None,
+):
     # Let's see it!
     # Note: Progress bar might work incorrectly due to the async nature of CUDA.
-    kwarg_inputs = get_kwarg_inputs()
     iter_profiler = IterationProfiler()
     if 'callback_on_step_end' in inspect.signature(model).parameters:
         kwarg_inputs[
@@ -278,9 +287,15 @@ def main():
     peak_mem = torch.cuda.max_memory_allocated()
     print(f'Peak memory: {peak_mem / 1024**3:.3f}GiB')
 
-    if args.output_image is not None:
-        output_images[0].save(args.output_image)
+    if output_image is not None:
+        output_images[0].save(output_image)
 
 
 if __name__ == '__main__':
-    main()
+    model, kwarg_inputs, output_image = prepare_model()
+    
+    image_gen(
+        model=model,
+        kwarg_inputs=kwarg_inputs,
+        output_image=output_image
+    )
