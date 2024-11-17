@@ -267,7 +267,7 @@ def prepare_model(args: Namespace | None = None,
 def image_gen(
     model,
     kwarg_inputs: dict[str, ],
-    output_image: str | None,
+    output_image: str | None = None,
     print_image_terminal=False,
 ):
     # Let's see it!
