@@ -60,6 +60,7 @@ def parse_args():
         choices=['none', 'sfast', 'compile', 'compile-max-autotune'])
     parser.add_argument('--quantize', action='store_true')
     parser.add_argument('--no-fusion', action='store_true')
+    parser.add_argument('--print-image-terminal', action='store_true')
     return parser.parse_args()
 
 
@@ -267,7 +268,6 @@ def prepare_model(args: Namespace | None = None,
 def image_gen(
     model,
     kwarg_inputs: dict[str, ],
-    print_image_terminal=False,
 ) -> list[Image.Image]:
     # Let's see it!
     # Note: Progress bar might work incorrectly due to the async nature of CUDA.
@@ -278,14 +278,7 @@ def image_gen(
     begin = time.time()
     output_images = model(**kwarg_inputs).images
     end = time.time()
-
-    # Let's view it in terminal!
-    if print_image_terminal:
-        from sfast.utils.term_image import print_image
-
-        for image in output_images:
-            print_image(image, max_width=80)
-
+    
     print(f'Inference time: {end - begin:.3f}s')
     iter_per_sec = iter_profiler.get_iter_per_sec()
     if iter_per_sec is not None:
@@ -307,3 +300,10 @@ if __name__ == '__main__':
     
     if args.output_image is not None:
         output_images[0].save(args.output_image)
+
+    # Let's view it in terminal!
+    if args.print_image_terminal:
+        from sfast.utils.term_image import print_image
+
+        for image in output_images:
+            print_image(image, max_width=80)
