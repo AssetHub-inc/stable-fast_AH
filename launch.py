@@ -269,7 +269,7 @@ def image_gen(
     kwarg_inputs: dict[str, ],
     output_image: str | None = None,
     print_image_terminal=False,
-):
+) -> list[Image.Image]:
     # Let's see it!
     # Note: Progress bar might work incorrectly due to the async nature of CUDA.
     iter_profiler = IterationProfiler()
@@ -296,13 +296,15 @@ def image_gen(
 
     if output_image is not None:
         output_images[0].save(output_image)
+    
+    return output_images
 
 
 if __name__ == '__main__':
     args = parse_args()
     model, kwarg_inputs = prepare_model(args=args)
     
-    image_gen(
+    output_images = image_gen(
         model=model,
         kwarg_inputs=kwarg_inputs,
         output_image=args.output_image,
