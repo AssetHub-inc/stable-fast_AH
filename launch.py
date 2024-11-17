@@ -267,7 +267,6 @@ def prepare_model(args: Namespace | None = None,
 def image_gen(
     model,
     kwarg_inputs: dict[str, ],
-    output_image: str | None = None,
     print_image_terminal=False,
 ) -> list[Image.Image]:
     # Let's see it!
@@ -294,9 +293,6 @@ def image_gen(
     peak_mem = torch.cuda.max_memory_allocated()
     print(f'Peak memory: {peak_mem / 1024**3:.3f}GiB')
 
-    if output_image is not None:
-        output_images[0].save(output_image)
-    
     return output_images
 
 
@@ -307,5 +303,7 @@ if __name__ == '__main__':
     output_images = image_gen(
         model=model,
         kwarg_inputs=kwarg_inputs,
-        output_image=args.output_image,
     )
+    
+    if args.output_image is not None:
+        output_images[0].save(args.output_image)
