@@ -303,6 +303,9 @@ if __name__ == '__main__':
     args = parse_args()
     model, kwarg_inputs = prepare_model(args=args)
     
+    print("kwarg_inputs:")
+    print(kwarg_inputs)
+    
     output_images = image_gen(
         model=model,
         kwarg_inputs=kwarg_inputs,
