@@ -17,6 +17,7 @@ CONTROL_IMAGE = None
 OUTPUT_IMAGE = None
 EXTRA_CALL_KWARGS = None
 
+import os
 import importlib
 import inspect
 import argparse
@@ -312,7 +313,11 @@ if __name__ == '__main__':
     )
     
     if args.output_image is not None:
-        output_images[0].save(args.output_image)
+        base_path, ext = os.path.splitext(args.output_image)
+
+        for i, image in enumerate(output_images):
+            save_path = f"{base_path}-{i}{ext}"
+            image.save(save_path)
 
     # Let's view it in terminal!
     if args.print_image_terminal:
