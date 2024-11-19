@@ -1,6 +1,7 @@
 MODEL = 'stabilityai/stable-diffusion-xl-base-1.0'
 VARIANT = None
 CUSTOM_PIPELINE = None
+VAE = 'madebyollin/sdxl-vae-fp16-fix'
 SCHEDULER = 'EulerAncestralDiscreteScheduler'
 LORA = None
 CONTROLNET = 'diffusers/controlnet-depth-sdxl-1.0'
@@ -38,6 +39,7 @@ def parse_args():
     parser.add_argument('--variant', type=str, default=VARIANT)
     parser.add_argument('--custom-pipeline', type=str, default=CUSTOM_PIPELINE)
     parser.add_argument('--scheduler', type=str, default=SCHEDULER)
+    parser.add_argument('--vae', type=str, default=VAE)
     parser.add_argument('--lora', type=str, default=LORA)
     parser.add_argument('--controlnet', type=str, default=CONTROLNET)
     parser.add_argument('--steps', type=int, default=STEPS)
@@ -71,7 +73,9 @@ def load_model(pipeline_cls,
                custom_pipeline=None,
                scheduler=None,
                lora=None,
-               controlnet=None):
+               controlnet=None,
+               vae=None,
+):
     extra_kwargs = {}
     if custom_pipeline is not None:
         extra_kwargs['custom_pipeline'] = custom_pipeline
@@ -85,6 +89,11 @@ def load_model(pipeline_cls,
     model = pipeline_cls.from_pretrained(model,
                                          torch_dtype=torch.float16,
                                          **extra_kwargs)
+    
+    if vae is not None:
+        from diffusers import AutoencoderKL
+        model.vae = AutoencoderKL.from_pretrained(vae, torch_dtype=torch.float16)
+    
     if scheduler is not None:
         scheduler_cls = getattr(importlib.import_module('diffusers'),
                                 scheduler)
@@ -175,6 +184,7 @@ def prepare_model(args: Namespace | None = None,
         scheduler=args.scheduler,
         lora=args.lora,
         controlnet=args.controlnet,
+        vae=args.vae,
     )
 
     height = args.height or model.unet.config.sample_size * model.vae_scale_factor
