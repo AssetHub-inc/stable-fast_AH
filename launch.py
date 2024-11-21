@@ -83,8 +83,13 @@ def load_model(pipeline_cls,
         extra_kwargs['variant'] = variant
     if controlnet is not None:
         from diffusers import ControlNetModel
-        controlnet = ControlNetModel.from_pretrained(controlnet,
-                                                     torch_dtype=torch.float16)
+        if os.path.splitext(controlnet)[1] == ".safetensors":
+            print(f"Loading ControlNet model from a file at: {controlnet}")
+            controlnet = ControlNetModel.from_single_file(controlnet,
+                                                          torch_dtype=torch.float16)
+        else:
+            controlnet = ControlNetModel.from_pretrained(controlnet,
+                                                         torch_dtype=torch.float16)
         extra_kwargs['controlnet'] = controlnet
     model = pipeline_cls.from_pretrained(model,
                                          torch_dtype=torch.float16,
