@@ -17,6 +17,7 @@ INPUT_IMAGE = None
 CONTROL_IMAGE = None
 OUTPUT_IMAGE = None
 EXTRA_CALL_KWARGS = None
+QUANTIZE: bool | None = True
 
 import os
 import importlib
@@ -61,7 +62,7 @@ def parse_args():
         type=str,
         default='sfast',
         choices=['none', 'sfast', 'compile', 'compile-max-autotune'])
-    parser.add_argument('--quantize', action='store_true')
+    parser.add_argument('--quantize', action='store_true', default=QUANTIZE)
     parser.add_argument('--no-fusion', action='store_true')
     parser.add_argument('--print-image-terminal', action='store_true')
     return parser.parse_args()
